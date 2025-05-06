@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Schedule</title>
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --light-purple: #f3e8ff;
+            --hover-purple: #a188d4;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--light-purple);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: var(--main-purple);
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #f44336;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--main-purple);
+            margin-bottom: 25px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #fff;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button,
+        .cancel-button {
+            padding: 10px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        button {
+            background-color: var(--main-purple);
+            color: white;
+        }
+
+        .cancel-button {
+            background-color: var(--dark-purple);
+            color: white;
+            text-decoration: none;
+        }
+
+        button:hover {
+            background-color: var(--hover-purple);
+        }
+
+        .cancel-button:hover {
+            background-color: #7c4dcc;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            button,
+            .cancel-button {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <a href="/" class="close-btn" aria-label="Close form">&times;</a>
+        <h1>Add Schedule</h1>
+        <form action="/add" method="post">
+            <label for="day">Day:</label>
+            <select name="day" id="day" required>
+                <option value="">Select a day</option>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
+
+            <label for="start_time">Start Time:</label>
+            <input type="time" name="start_time" id="start_time" required>
+
+            <label for="end_time">End Time:</label>
+            <input type="time" name="end_time" id="end_time" required>
+
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" required>
+
+            <label for="section">Section:</label>
+            <input type="text" name="section" id="section" required>
+
+            <label for="room">Room:</label>
+            <input type="text" name="room" id="room" required>
+
+            <div class="button-group">
+                <button type="submit">Add Schedule</button>
+                <a href="/" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

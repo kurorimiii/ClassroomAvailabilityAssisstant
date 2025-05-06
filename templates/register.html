@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --light-purple: #f3e8ff;
+            --hover-purple: #a188d4;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            position: relative;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: var(--main-purple);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="checkbox"] {
+            margin-top: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--main-purple);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--hover-purple);
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--main-purple);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #f44336;
+        }
+
+        .error-box {
+            background-color: #ffdddd;
+            color: #a94442;
+            border-left: 5px solid #f44336;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var checkbox = document.getElementById("show-password");
+            passwordField.type = checkbox.checked ? "text" : "password";
+        }
+    </script>
+</head>
+<body>
+    <div class="register-container">
+        <a href="/" class="close-btn" aria-label="Close registration form">&times;</a>
+        <h2>Create Account</h2>
+
+        {% if error %}
+            <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+            <label for="username">Username:
+                <input type="text" name="username" required>
+            </label>
+
+            <label for="password">Password:
+                <input type="password" name="password" id="password" required>
+            </label>
+
+            <label>
+                <input type="checkbox" id="show-password" onclick="togglePassword()"> Show Password
+            </label>
+
+            <button type="submit">Register</button>
+        </form>
+        <a href="/login">Back to Login</a>
+    </div>
+</body>
+</html>

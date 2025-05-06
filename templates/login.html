@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --light-purple: #f3e8ff;
+            --hover-purple: #a188d4;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f6fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            position: relative;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--main-purple);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: var(--light-purple);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--main-purple);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--hover-purple);
+        }
+
+        .show-password-container {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        a {
+            color: var(--main-purple);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #f44336;
+        }
+
+        .error-box {
+            background-color: #ffdddd;
+            color: #a94442;
+            border-left: 5px solid #f44336;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <a href="/" class="close-btn" aria-label="Close login form">&times;</a>
+        <h1>Login</h1>
+
+        {% if error %}
+            <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        <form action="/login" method="post">
+            <label for="username">Username:</label>
+            <input type="text" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+
+            <div class="show-password-container">
+                <input type="checkbox" id="show-password" onclick="togglePassword()"> Show Password
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="/register">Sign up here</a></p>
+    </div>
+
+    <script>
+        function togglePassword() {
+            var passwordField = document.getElementById("password");
+            var checkbox = document.getElementById("show-password");
+            passwordField.type = checkbox.checked ? "text" : "password";
+        }
+    </script>
+</body>
+</html>

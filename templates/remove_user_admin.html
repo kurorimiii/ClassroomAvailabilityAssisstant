@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Remove Admin/User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --light-purple: #f3e8ff;
+            --occupied-red: #e57373;
+            --hover-purple: #a188d4;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f6fc;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--main-purple);
+        }
+
+        .welcome {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        th {
+            background-color: var(--light-purple);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        button {
+            padding: 5px 15px;
+            background-color: var(--main-purple);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--hover-purple);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        .back-btn {
+            background-color: var(--dark-purple);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #7c4dcc;
+        }
+
+        .logout-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            background-color: var(--dark-purple);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #7c4dcc;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Remove Admin/User</h1>
+
+    {% if session.username %}
+        <p class="welcome">Welcome, {{ session.username }}!</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user[1] }}</td> <!-- Assuming user[1] is the username -->
+                        <td>
+                            {% if user[2] == 'admin' %}
+                                Admin
+                            {% else %}
+                                User
+                            {% endif %}
+                        </td> <!-- Assuming user[2] is the role (admin/user) -->
+                        <td>
+                            {% if user[1] != session.username %} <!-- Prevent self removal -->
+                                <form method="POST" action="/remove-user/{{ user[0] }}">
+                                    <!-- Add the user ID as a hidden input -->
+                                    <input type="hidden" name="user_id" value="{{ user[0] }}">
+                                    <button type="submit">Remove</button>
+                                </form>
+                            {% else %}
+                                <button disabled>Cannot Remove Yourself</button> <!-- Disable button for the logged-in user -->
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="logout-container">
+            <form action="/logout" method="get">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+
+        <a href="/" class="back-btn">Back to Dashboard</a>
+    {% else %}
+        <p>Please <a href="/login">log in</a> to access this page.</p>
+    {% endif %}
+</div>
+</body>
+</html>

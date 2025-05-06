@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classroom Availability Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --light-purple: #f3e8ff;
+            --occupied-red: #e57373;
+            --hover-purple: #a188d4;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f6fc;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--main-purple);
+        }
+
+        .welcome {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        .search-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            min-width: 180px;
+        }
+
+        input[type="text"].wide-input {
+            flex-grow: 1;
+            min-width: 300px;
+        }
+
+        button, .btn {
+            padding: 10px 20px;
+            background-color: var(--main-purple);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--hover-purple);
+        }
+
+        button:focus, .btn:focus {
+            outline: none;
+        }
+
+        .delete-btn {
+            background-color: var(--dark-purple);
+            color: white;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .delete-btn:hover {
+            background-color: #7c4dcc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--main-purple);
+            color: white;
+        }
+
+        td {
+            background-color: var(--light-purple);
+        }
+
+        .status-available {
+            color: var(--main-purple);
+            font-weight: bold;
+        }
+
+        .status-occupied {
+            color: var(--occupied-red);
+            font-weight: bold;
+        }
+
+        .status-auto {
+            color: orange;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            .search-filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            button, .btn {
+                width: 100%;
+                font-size: 16px;
+            }
+        }
+
+        .logout-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            background-color: var(--dark-purple);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #7c4dcc;
+        }
+
+        .grey-btn {
+            background-color: #b39ddb;
+        }
+
+        .grey-btn:hover {
+            background-color: #a087c1;
+        }
+    </style>
+    <script>
+        function confirmDelete(event, scheduleId) {
+            event.preventDefault();
+            const isConfirmed = confirm("Are you sure you want to delete this schedule?");
+            if (isConfirmed) {
+                window.location.href = '/delete-schedule/' + scheduleId;
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Classroom Availability Assistant</h1>
+
+    {% if session.username %}
+        <p class="welcome">Welcome, {{ session.username }}!</p>
+
+        {% if role == 'admin' %}
+            <a href="/add-admin" class="btn grey-btn">Add Admins</a>
+            <a href="/remove_user_admin" class="btn grey-btn" style="margin-left: 10px;">Remove Admin/User</a>
+        {% endif %}
+
+        <div style="margin-bottom: 20px;"></div>
+
+        <form method="get" action="">
+            <div class="search-filter-container">
+                <input type="text" name="search" class="wide-input" placeholder="Search by subject, section, or room" value="{{ request.args.get('search', '') }}">
+                <select name="day">
+                    <option value="">Filter by day</option>
+                    <option value="Sunday" {% if request.args.get('day') == 'Sunday' %}selected{% endif %}>Sunday</option>
+                    <option value="Monday" {% if request.args.get('day') == 'Monday' %}selected{% endif %}>Monday</option>
+                    <option value="Tuesday" {% if request.args.get('day') == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if request.args.get('day') == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if request.args.get('day') == 'Thursday' %}selected{% endif %}>Thursday</option>
+                    <option value="Friday" {% if request.args.get('day') == 'Friday' %}selected{% endif %}>Friday</option>
+                    <option value="Saturday" {% if request.args.get('day') == 'Saturday' %}selected{% endif %}>Saturday</option>
+                </select>
+                <button type="submit">Apply</button>
+            </div>
+        </form>
+
+        {% if role == 'admin' %}
+        <form action="/add" method="get"><button type="submit">Add Schedule</button></form>
+        {% endif %}
+
+        <table>
+            <tr>
+                <th>ID Number</th>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Subject</th>
+                <th>Section</th>
+                <th>Room</th>
+                <th>Status</th>
+                {% if role == 'admin' %}<th>Action</th>{% endif %}
+            </tr>
+            {% for row in schedule %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.day }}</td>
+                <td>{{ row.start_time }}</td>
+                <td>{{ row.end_time }}</td>
+                <td>{{ row.subject }}</td>
+                <td>{{ row.section }}</td>
+                <td>{{ row.room }}</td>
+                <td class="{% if 'available' in row.status|lower %}status-available{% elif 'occupied' in row.status|lower %}status-occupied{% else %}status-auto{% endif %}">
+                    {{ row.status }}
+                </td>
+                {% if role == 'admin' %}
+                <td>
+                    <a href="/override/{{ row.id }}/available" class="btn">Set Available</a>
+                    <a href="/override/{{ row.id }}/occupied" class="btn">Set Occupied</a>
+                    <a href="/override/{{ row.id }}/auto" class="btn">Set Auto</a>
+                    <a href="#" class="btn delete-btn" onclick="confirmDelete(event, {{ row.id }})">Delete</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="logout-container">
+            <form action="/logout" method="get">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+
+    {% else %}
+        <p>Please <a href="/login">log in</a> to access the schedule.</p>
+    {% endif %}
+</div>
+</body>
+</html>

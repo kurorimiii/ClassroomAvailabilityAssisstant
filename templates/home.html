@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classroom Availability Assistant</title>
+    <style>
+        :root {
+            --main-purple: #b19cd9;
+            --dark-purple: #8e6dcf;
+            --hover-purple: #a188d4;
+            --light-bg: #f9f6fc;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--light-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .home-container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: var(--main-purple);
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn {
+            background-color: var(--main-purple);
+            color: white;
+        }
+
+        .signup-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .login-btn:hover {
+            background-color: var(--hover-purple);
+        }
+
+        .signup-btn:hover {
+            background-color: #1976D2;
+        }
+
+        @media (max-width: 600px) {
+            .home-container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="home-container">
+    <h1>Classroom Availability Assistant</h1>
+    <p>Welcome! Please log in or sign up to continue.</p>
+    <a href="/login"><button class="btn login-btn">Login</button></a>
+    <a href="/register"><button class="btn signup-btn">Sign Up</button></a>
+</div>
+</body>
+</html>
