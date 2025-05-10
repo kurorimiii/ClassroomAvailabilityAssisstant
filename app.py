@@ -4,20 +4,24 @@ from datetime import datetime
 from pytz import timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# Handles database initialization and queries
 class DatabaseManager:
     def __init__(self, db_name):
         self.db_name = db_name
         self._init_db()
 
+    # Initialize tables and default users
     def _init_db(self):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
+            # Create users table
             cursor.execute('''CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
                 role TEXT NOT NULL CHECK (role IN ('admin', 'user'))
             )''')
+            # Create RoomSchedule table
             cursor.execute('''CREATE TABLE IF NOT EXISTS RoomSchedule (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 day TEXT NOT NULL,
@@ -29,6 +33,7 @@ class DatabaseManager:
                 status TEXT NOT NULL DEFAULT 'available',
                 manual_override TEXT DEFAULT NULL
             )''')
+            # Add default admin and guest user if no users exist
             cursor.execute("SELECT COUNT(*) FROM users")
             if cursor.fetchone()[0] == 0:
                 cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
@@ -37,6 +42,7 @@ class DatabaseManager:
                                ("guest", generate_password_hash('guest123'), 'user'))
             conn.commit()
 
+    # Generic query executor
     def execute(self, query, params=(), fetch=False, fetchone=False):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
@@ -48,6 +54,7 @@ class DatabaseManager:
                 return cursor.fetchall()
             return None
 
+# Handles user registration, login, and management
 class UserManager:
     def __init__(self, db: DatabaseManager):
         self.db = db
@@ -74,6 +81,7 @@ class UserManager:
     def remove_user(self, user_id):
         return self.db.execute("DELETE FROM users WHERE id = ?", (user_id,))
 
+# Manages room schedule logic and availability
 class ScheduleManager:
     def __init__(self, db: DatabaseManager):
         self.db = db
@@ -86,6 +94,7 @@ class ScheduleManager:
         day, now_time = self.current_day_time()
         current_time_obj = datetime.strptime(now_time, '%H:%M')
 
+        # Build dynamic query
         query = "SELECT * FROM RoomSchedule WHERE 1=1"
         params = []
         if day_filter:
@@ -100,6 +109,7 @@ class ScheduleManager:
         schedule = []
         room_in_use = set()
 
+        # Determine which rooms are currently in use
         for row in rows:
             sched_day, start, end, room, override = row[1], row[2], row[3], row[6], row[8]
             try:
@@ -110,6 +120,7 @@ class ScheduleManager:
             if sched_day == day and start_obj <= current_time_obj <= end_obj:
                 room_in_use.add(room)
 
+        # Assign status based on current time and manual overrides
         for row in rows:
             id, sched_day, start, end, subject, section, room, status, override = row
             try:
@@ -127,6 +138,8 @@ class ScheduleManager:
                 'id': id, 'day': sched_day, 'start_time': start, 'end_time': end,
                 'subject': subject, 'section': section, 'room': room, 'status': status
             })
+
+        # Sort schedules by availability
         schedule.sort(key=lambda x: ('Available' in x['status'], x['status'] != 'Available (Auto)'), reverse=True)
         return schedule
 
@@ -148,10 +161,11 @@ class ScheduleManager:
     def delete_schedule(self, schedule_id):
         return self.db.execute("DELETE FROM RoomSchedule WHERE id = ?", (schedule_id,))
 
+# Main application class that registers all routes
 class RoomScheduleApp:
     def __init__(self):
         self.app = Flask(__name__)
-        self.app.secret_key = 'supersecretkey'
+        self.app.secret_key = 'supersecretkey'  # Needed for sessions
         self.db = DatabaseManager('room_schedule.db')
         self.user_mgr = UserManager(self.db)
         self.sched_mgr = ScheduleManager(self.db)
@@ -174,8 +188,8 @@ class RoomScheduleApp:
                 user = self.user_mgr.authenticate(
                     request.form['username'], request.form['password'])
                 if user:
-                    session.update(user)  # This now includes 'id', 'username', 'role'
-                    session['user_id'] = user['id']  # Make sure user_id is added to session
+                    session.update(user)
+                    session['user_id'] = user['id']  # Store user ID
                     return redirect('/')
                 return render_template('login.html', error="Invalid credentials")
             return render_template('login.html')
@@ -261,7 +275,6 @@ class RoomScheduleApp:
                 return "You cannot remove yourself.", 400
             self.user_mgr.remove_user(request.form['user_id'])
             return redirect('/remove_user_admin')
-
 
 # Entrypoint
 app_instance = RoomScheduleApp()
